@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+from collections import Counter
+
 import numpy as np
 
 
@@ -44,9 +46,11 @@ def route_stats(route, walk_time_matrix, visit_times, costs, ratings):
     Считает основные метрики маршрута.
     """
 
-    if len(route) == 0:
+    if route is None or len(route) == 0:
         return {
+            "route_len": 0,
             "route_points": 0,
+            "points_count": 0,
             "total_walk_time_min": 0.0,
             "total_visit_time_min": 0.0,
             "total_time_min": 0.0,
@@ -55,8 +59,10 @@ def route_stats(route, walk_time_matrix, visit_times, costs, ratings):
             "avg_rating": 0.0,
         }
 
+    route = list(map(int, route))
+
     total_walk = sum(
-        walk_time_matrix[route[i], route[i + 1]]
+        float(walk_time_matrix[route[i], route[i + 1]])
         for i in range(len(route) - 1)
     )
 
@@ -66,7 +72,9 @@ def route_stats(route, walk_time_matrix, visit_times, costs, ratings):
     avg_rating = float(np.mean(ratings[route]))
 
     return {
-        "route_points": len(route),
+        "route_len": int(len(route)),
+        "route_points": int(len(route)),
+        "points_count": int(len(route)),
         "total_walk_time_min": float(total_walk),
         "total_visit_time_min": float(total_visit),
         "total_time_min": float(total_walk + total_visit),
@@ -508,10 +516,6 @@ def satiety_adjusted_route_score(
     )
 
     return float(score)
-
-from collections import Counter
-import numpy as np
-
 # =========================
 # Персонализация маршрута
 # =========================
